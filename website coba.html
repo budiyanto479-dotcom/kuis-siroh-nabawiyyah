@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Sirah Nabawiyyah</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&display=swap');
+        
+        .arabic-font { font-family: 'Amiri', serif; }
+        .main-font { font-family: 'Inter', sans-serif; }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .quiz-option {
+            transition: all 0.2s ease;
+        }
+        
+        .quiz-option:hover {
+            background-color: #f3f4f6;
+            transform: translateX(5px);
+        }
+        
+        .quiz-option.selected {
+            background-color: #3b82f6;
+            color: white;
+        }
+        
+        .quiz-option.correct {
+            background-color: #10b981;
+            color: white;
+        }
+        
+        .quiz-option.incorrect {
+            background-color: #ef4444;
+            color: white;
+        }
+        
+        .name-card {
+            animation: fadeInUp 0.5s ease;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .spinning {
+            animation: spin 2s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="main-font bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-8">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl font-bold mb-2">🕌 Kuis Sirah Nabawiyyah</h1>
+            <p class="text-xl opacity-90 arabic-font">سِيرَة النَّبَوِيَّة</p>
+            <p class="mt-2 text-lg">Mengenal Kehidupan Rasulullah ﷺ</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Home Page -->
+        <div id="homePage" class="space-y-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Pilih Jenis Kuis</h2>
+                <p class="text-gray-600 text-lg">Uji pengetahuan Anda tentang kehidupan Nabi Muhammad ﷺ</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Menu 1: Pilihan Ganda -->
+                <div class="bg-white rounded-xl shadow-lg p-6 card-hover cursor-pointer" onclick="showPage('multipleChoice')">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-3xl">📝</span>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Pilihan Ganda</h3>
+                        <p class="text-gray-600">Jawab pertanyaan dengan memilih salah satu dari beberapa pilihan</p>
+                    </div>
+                </div>
+
+                <!-- Menu 2: Benar Salah -->
+                <div class="bg-white rounded-xl shadow-lg p-6 card-hover cursor-pointer" onclick="showPage('trueFalse')">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-3xl">✅</span>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Benar Salah</h3>
+                        <p class="text-gray-600">Tentukan apakah pernyataan benar atau salah</p>
+                    </div>
+                </div>
+
+                <!-- Menu 3: Tebak Kata -->
+                <div class="bg-white rounded-xl shadow-lg p-6 card-hover cursor-pointer" onclick="showPage('guessWord')">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-3xl">🔤</span>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Tebak Kata</h3>
+                        <p class="text-gray-600">Tebak kata yang berkaitan dengan Sirah Nabawiyyah</p>
+                    </div>
+                </div>
+
+                <!-- Menu 4: Undian Nama -->
+                <div class="bg-white rounded-xl shadow-lg p-6 card-hover cursor-pointer" onclick="showPage('nameDraw')">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-3xl">🎲</span>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Undian Nama</h3>
+                        <p class="text-gray-600">Undi nama untuk menunjuk yang akan menjawab soal</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Multiple Choice Page -->
+        <div id="multipleChoicePage" class="hidden">
+            <div class="max-w-4xl mx-auto">
+                <div class="flex items-center justify-between mb-8">
+                    <button onclick="showPage('home')" class="flex items-center text-blue-600 hover:text-blue-800">
+                        <span class="mr-2">←</span> Kembali ke Beranda
+                    </button>
+                    <div class="text-right">
+                        <span class="text-sm text-gray-600">Soal <span id="mcCurrentQ">1</span> dari <span id="mcTotalQ">5</span></span>
+                        <div class="text-lg font-semibold text-blue-600">Skor: <span id="mcScore">0</span></div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">📝 Kuis Pilihan Ganda</h2>
+                    
+                    <div id="mcQuestion" class="mb-8">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-6"></h3>
+                        <div id="mcOptions" class="space-y-3"></div>
+                    </div>
+                    
+                    <div class="flex justify-between">
+                        <button id="mcSubmit" onclick="submitMCAnswer()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            Jawab
+                        </button>
+                        <button id="mcNext" onclick="nextMCQuestion()" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 hidden">
+                            Soal Berikutnya
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="mcResult" class="hidden mt-8 bg-white rounded-xl shadow-lg p-8 text-center">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">🎉 Kuis Selesai!</h3>
+                    <p class="text-xl mb-4">Skor Akhir: <span id="mcFinalScore" class="font-bold text-blue-600"></span></p>
+                    <button onclick="restartMC()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 mr-4">
+                        Ulangi Kuis
+                    </button>
+                    <button onclick="showPage('home')" class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700">
+                        Kembali ke Beranda
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- True False Page -->
+        <div id="trueFalsePage" class="hidden">
+            <div class="max-w-4xl mx-auto">
+                <div class="flex items-center justify-between mb-8">
+                    <button onclick="showPage('home')" class="flex items-center text-blue-600 hover:text-blue-800">
+                        <span class="mr-2">←</span> Kembali ke Beranda
+                    </button>
+                    <div class="text-right">
+                        <span class="text-sm text-gray-600">Soal <span id="tfCurrentQ">1</span> dari <span id="tfTotalQ">5</span></span>
+                        <div class="text-lg font-semibold text-green-600">Skor: <span id="tfScore">0</span></div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">✅ Kuis Benar Salah</h2>
+                    
+                    <div id="tfQuestion" class="mb-8">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-6"></h3>
+                        <div class="flex gap-4 justify-center">
+                            <button onclick="selectTFAnswer(true)" class="tf-option bg-green-100 hover:bg-green-200 text-green-800 px-8 py-4 rounded-lg text-lg font-semibold transition-all">
+                                ✅ BENAR
+                            </button>
+                            <button onclick="selectTFAnswer(false)" class="tf-option bg-red-100 hover:bg-red-200 text-red-800 px-8 py-4 rounded-lg text-lg font-semibold transition-all">
+                                ❌ SALAH
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between">
+                        <button id="tfSubmit" onclick="submitTFAnswer()" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            Jawab
+                        </button>
+                        <button id="tfNext" onclick="nextTFQuestion()" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 hidden">
+                            Soal Berikutnya
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="tfResult" class="hidden mt-8 bg-white rounded-xl shadow-lg p-8 text-center">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">🎉 Kuis Selesai!</h3>
+                    <p class="text-xl mb-4">Skor Akhir: <span id="tfFinalScore" class="font-bold text-green-600"></span></p>
+                    <button onclick="restartTF()" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 mr-4">
+                        Ulangi Kuis
+                    </button>
+                    <button onclick="showPage('home')" class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700">
+                        Kembali ke Beranda
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Guess Word Page -->
+        <div id="guessWordPage" class="hidden">
+            <div class="max-w-4xl mx-auto">
+                <div class="flex items-center justify-between mb-8">
+                    <button onclick="showPage('home')" class="flex items-center text-blue-600 hover:text-blue-800">
+                        <span class="mr-2">←</span> Kembali ke Beranda
+                    </button>
+                    <div class="text-right">
+                        <span class="text-sm text-gray-600">Soal <span id="gwCurrentQ">1</span> dari <span id="gwTotalQ">5</span></span>
+                        <div class="text-lg font-semibold text-purple-600">Skor: <span id="gwScore">0</span></div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">🔤 Tebak Kata</h2>
+                    
+                    <div id="gwQuestion" class="mb-8 text-center">
+                        <h3 class="text-lg text-gray-600 mb-4">Petunjuk:</h3>
+                        <p class="text-xl font-semibold text-gray-800 mb-6" id="gwClue"></p>
+                        <div class="text-3xl font-mono tracking-widest mb-6" id="gwWordDisplay"></div>
+                        <input type="text" id="gwInput" class="border-2 border-gray-300 rounded-lg px-4 py-3 text-xl text-center uppercase tracking-widest focus:border-purple-500 focus:outline-none" placeholder="MASUKKAN JAWABAN" maxlength="20">
+                    </div>
+                    
+                    <div class="flex justify-between">
+                        <button id="gwSubmit" onclick="submitGWAnswer()" class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700">
+                            Jawab
+                        </button>
+                        <button id="gwNext" onclick="nextGWQuestion()" class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 hidden">
+                            Soal Berikutnya
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="gwResult" class="hidden mt-8 bg-white rounded-xl shadow-lg p-8 text-center">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">🎉 Kuis Selesai!</h3>
+                    <p class="text-xl mb-4">Skor Akhir: <span id="gwFinalScore" class="font-bold text-purple-600"></span></p>
+                    <button onclick="restartGW()" class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 mr-4">
+                        Ulangi Kuis
+                    </button>
+                    <button onclick="showPage('home')" class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700">
+                        Kembali ke Beranda
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Name Draw Page -->
+        <div id="nameDrawPage" class="hidden">
+            <div class="max-w-4xl mx-auto">
+                <div class="flex items-center justify-between mb-8">
+                    <button onclick="showPage('home')" class="flex items-center text-blue-600 hover:text-blue-800">
+                        <span class="mr-2">←</span> Kembali ke Beranda
+                    </button>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-lg p-8 text-center">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">🎲 Undian Nama</h2>
+                    <p class="text-gray-600 mb-8">Klik tombol di bawah untuk mengundi nama yang akan menjawab soal</p>
+                    
+                    <div class="mb-8">
+                        <div id="drawResult" class="hidden name-card bg-gradient-to-r from-orange-400 to-pink-500 text-white rounded-xl p-6 mb-6">
+                            <h3 class="text-xl font-semibold mb-2">Nama Terpilih:</h3>
+                            <div class="text-2xl font-bold mb-2" id="selectedName"></div>
+                            <div class="text-lg" id="selectedId"></div>
+                        </div>
+                        
+                        <button id="drawButton" onclick="drawName()" class="bg-orange-600 text-white px-8 py-4 rounded-lg text-xl font-semibold hover:bg-orange-700 transition-all">
+                            🎲 Undi Nama
+                        </button>
+                        
+                        <button id="drawAgain" onclick="resetDraw()" class="hidden bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 ml-4">
+                            Undi Lagi
+                        </button>
+                    </div>
+                    
+                    <div class="text-sm text-gray-500">
+                        <p>Total: <span id="totalStudents">102</span> mahasiswa</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Data mahasiswa
+        const students = [
+            "232407002 | Abdullah Hasyami Rafsanjani",
+            "232407003 | Abdullah Hilmy Alfatih",
+            "232407004 | Abdurrasyiid Ramadhan",
+            "232407005 | Afandy Abdillah Azzam",
+            "232407010 | Badai Matahari",
+            "232407012 | Fadel Andaru Nurhakim",
+            "232407015 | Ghifar Syaibani",
+            "232407019 | Julio Muhamad Putra S",
+            "232407023 | Muhamad Haqqi Furqon Sadewa",
+            "232407024 | Muhamad Rafif Syazwansyah",
+            "232407028 | Muhammad Azzam Alfajri",
+            "232407029 | Muhammad Fahmi Abyan",
+            "232407032 | Muhammad Haykal Syathir",
+            "232407036 | Muhammad Khoiri Azzam",
+            "232407037 | Muhammad Khoiry",
+            "232407041 | Muhammad Syahriza Al Furqon",
+            "232407045 | Raihan Nur Kurniawan",
+            "232407047 | Rizky Fadillah Putra Susanto",
+            "232407048 | Said Muhammad Arrazzaaq",
+            "232407049 | Salman",
+            "232407050 | Syafiq Abdullah Umar",
+            "232407051 | Tristan Syamil Maulana",
+            "232407052 | Yahya",
+            "232407088 | Muhammad Farhan Al Ghani",
+            "232407089 | Muhammad Faiz Al Qorzi",
+            "232407090 | Sholeh",
+            "232407092 | Abdurrozaq Hidayat",
+            "232407006 | Anugra Muhammad Rizki",
+            "232407008 | Arkan Ataya Zulkarnaen",
+            "232407009 | Arrezky Agnefirst Priyanto",
+            "232407011 | Daniyal Rashya Putra Daffa",
+            "232407014 | Faturrahman Sofyan Perdana",
+            "232407016 | Haidar Ahnafushalih Alrasyid",
+            "232407017 | Ibrahim Imamulmuhtadin",
+            "232407020 | Kevin Faro Al Ghifari",
+            "232407021 | Mj Wistara Ramadhan",
+            "232407022 | Muflihizza Rohid Kusyufalah",
+            "232407025 | Muhammad Adli Zubair",
+            "232407026 | Muhammad Adwa Arrasyid Trismadi",
+            "232407027 | Muhammad Al Fatih",
+            "232407030 | Muhammad Farras Mudzaffar",
+            "232407031 | Muhammad Furqon",
+            "232407033 | Muhammad Ihsan Ibrahim",
+            "232407034 | Muhammad Irham Faris Febrilliant",
+            "232407035 | Muhammad Keanu Salju Shoder",
+            "232407038 | Muhammad Naufal Ramadhan",
+            "232407039 | Muhammad Rafah",
+            "232407040 | Muhammad Salman Faris",
+            "232407042 | Musa",
+            "232407044 | Nada Jadwa Albani",
+            "232407086 | Muhammad Rizki Aditiya",
+            "242507002 | Abdillah Al Fayyadh",
+            "242507003 | Abdullah Ahmad Ramadhan",
+            "242507005 | Affan Ismail Yusuf",
+            "242507008 | Aindhra Alzhiran Maruli",
+            "242507015 | Atharizz Firas Adhyastha",
+            "242507016 | Azam Rafif Ahmad",
+            "242507017 | Azka Arifin Sipahutar",
+            "242507018 | Azzam Zakwan Alfiqry",
+            "242507019 | Bintang Ramadhan Putra Abrar",
+            "242507020 | Danish Athar Sofiyan",
+            "242507022 | Dzaky Alfarizi Wicaksono",
+            "242507027 | Haudh",
+            "242507028 | Muhammad Habibie Arosyad",
+            "242507029 | Kafila Zharif Syahjehan",
+            "242507032 | Muhammad Danish",
+            "242507035 | Muhammad Fadhil",
+            "242507036 | Muhammad Fadhil Hafidz Lizardi",
+            "242507037 | Muhammad Fais Faadhil Musyaffa",
+            "242507039 | Muhammad Faris Aufa",
+            "242507040 | Muhammad Fathan Ahzami",
+            "242507043 | Muhammad Jurdan Al Ghifari",
+            "242507044 | Muhammad Luthfi Baihaqi",
+            "242507048 | Muhammad Sena Al Fatih",
+            "242507050 | Nabil Khairan Al Batros",
+            "242507053 | Rahardian Ahsan Putra Kushariyanto",
+            "242507055 | Rezvan Farih",
+            "242507056 | Rizky Zainal Sipahutar",
+            "242507057 | Safarraz Al-Fath Semeru Bachrudin",
+            "242507058 | Shallu Al Fatah",
+            "242507060 | Ubaidillah Mufid",
+            "242507061 | Umair",
+            "242507095 | Muhammad Taqi Rabbani",
+            "242507096 | Abdurrahman Fathoni",
+            "242507001 | Aan Subkhan",
+            "242507004 | Adzhani Raka Nandya",
+            "242507006 | Ahmad Fadilah",
+            "242507007 | Ahmad Ja'Far Shiddiq",
+            "242507009 | Alfisahri Raychansyah Pradipta",
+            "242507010 | Alif Ahmad Yunus",
+            "242507011 | Angelo Al Fattah Rizky",
+            "242507012 | Arif Nail Hibatullah",
+            "242507013 | Arsya Abdullah Kurniawan",
+            "242507014 | Asyraf Ahmad Algazel",
+            "242507021 | Datu Anhul Bangranga Jusman",
+            "242507023 | Fachran Dzaky Fachroby",
+            "242507024 | Fajrul Faris",
+            "242507025 | Ghaisan Dzaky Al Fattah",
+            "242507026 | Hammam Alfarisi Binsig",
+            "242507030 | Muhamad Yusuf",
+            "242507031 | Muhammad Arfan Rifqi Kamaluddin",
+            "242507033 | Muhammad Devan Rafandra",
+            "242507034 | Muhammad Fadgham Azka Satria",
+            "242507038 | Muhammad Faiz Al Furqon",
+            "242507041 | Muhammad Hasan Habibie",
+            "242507042 | Muhammad Irham Nurkasim",
+            "242507045 | Muhammad Nizam Fadhilah",
+            "242507046 | Muhammad Raihan Shobir Sambo"
+        ];
+
+        // Soal Multiple Choice
+        const mcQuestions = [
+            {
+                question: "Di kota manakah Nabi Muhammad ﷺ dilahirkan?",
+                options: ["Madinah", "Makkah", "Thaif", "Yaman"],
+                correct: 1
+            },
+            {
+                question: "Siapakah nama ibu Nabi Muhammad ﷺ?",
+                options: ["Khadijah", "Aminah", "Halimah", "Fatimah"],
+                correct: 1
+            },
+            {
+                question: "Pada usia berapa Nabi Muhammad ﷺ diangkat menjadi Rasul?",
+                options: ["35 tahun", "40 tahun", "45 tahun", "50 tahun"],
+                correct: 1
+            },
+            {
+                question: "Di gua manakah Nabi Muhammad ﷺ menerima wahyu pertama?",
+                options: ["Gua Tsur", "Gua Hira", "Gua Uhud", "Gua Quba"],
+                correct: 1
+            },
+            {
+                question: "Siapakah istri pertama Nabi Muhammad ﷺ?",
+                options: ["Aisyah", "Hafshah", "Khadijah", "Zainab"],
+                correct: 2
+            }
+        ];
+
+        // Soal True False
+        const tfQuestions = [
+            {
+                question: "Nabi Muhammad ﷺ dilahirkan pada tahun Gajah.",
+                correct: true
+            },
+            {
+                question: "Ayah Nabi Muhammad ﷺ bernama Abu Thalib.",
+                correct: false
+            },
+            {
+                question: "Nabi Muhammad ﷺ dikenal dengan sebutan Al-Amin (yang terpercaya) sebelum menjadi Nabi.",
+                correct: true
+            },
+            {
+                question: "Hijrah Nabi Muhammad ﷺ ke Madinah terjadi pada tahun 622 Masehi.",
+                correct: true
+            },
+            {
+                question: "Nabi Muhammad ﷺ wafat pada usia 65 tahun.",
+                correct: false
+            }
+        ];
+
+        // Soal Guess Word
+        const gwQuestions = [
+            {
+                clue: "Kota kelahiran Nabi Muhammad ﷺ",
+                answer: "MAKKAH"
+            },
+            {
+                clue: "Malaikat yang menyampaikan wahyu kepada Nabi Muhammad ﷺ",
+                answer: "JIBRIL"
+            },
+            {
+                clue: "Istri pertama Nabi Muhammad ﷺ yang juga seorang pedagang",
+                answer: "KHADIJAH"
+            },
+            {
+                clue: "Gua tempat Nabi Muhammad ﷺ menerima wahyu pertama",
+                answer: "HIRA"
+            },
+            {
+                clue: "Kota tujuan hijrah Nabi Muhammad ﷺ",
+                answer: "MADINAH"
+            }
+        ];
+
+        // Variables untuk quiz
+        let currentMCQuestion = 0;
+        let mcScore = 0;
+        let selectedMCAnswer = null;
+
+        let currentTFQuestion = 0;
+        let tfScore = 0;
+        let selectedTFAnswer = null;
+
+        let currentGWQuestion = 0;
+        let gwScore = 0;
+
+        // Navigation functions
+        function showPage(page) {
+            // Hide all pages
+            document.getElementById('homePage').classList.add('hidden');
+            document.getElementById('multipleChoicePage').classList.add('hidden');
+            document.getElementById('trueFalsePage').classList.add('hidden');
+            document.getElementById('guessWordPage').classList.add('hidden');
+            document.getElementById('nameDrawPage').classList.add('hidden');
+
+            // Show selected page
+            if (page === 'home') {
+                document.getElementById('homePage').classList.remove('hidden');
+            } else if (page === 'multipleChoice') {
+                document.getElementById('multipleChoicePage').classList.remove('hidden');
+                initMC();
+            } else if (page === 'trueFalse') {
+                document.getElementById('trueFalsePage').classList.remove('hidden');
+                initTF();
+            } else if (page === 'guessWord') {
+                document.getElementById('guessWordPage').classList.remove('hidden');
+                initGW();
+            } else if (page === 'nameDraw') {
+                document.getElementById('nameDrawPage').classList.remove('hidden');
+                document.getElementById('totalStudents').textContent = students.length;
+            }
+        }
+
+        // Multiple Choice Functions
+        function initMC() {
+            currentMCQuestion = 0;
+            mcScore = 0;
+            selectedMCAnswer = null;
+            document.getElementById('mcResult').classList.add('hidden');
+            document.getElementById('mcQuestion').classList.remove('hidden');
+            loadMCQuestion();
+        }
+
+        function loadMCQuestion() {
+            const question = mcQuestions[currentMCQuestion];
+            document.getElementById('mcCurrentQ').textContent = currentMCQuestion + 1;
+            document.getElementById('mcTotalQ').textContent = mcQuestions.length;
+            document.getElementById('mcScore').textContent = mcScore;
+            
+            document.querySelector('#mcQuestion h3').textContent = question.question;
+            
+            const optionsContainer = document.getElementById('mcOptions');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'quiz-option p-4 border-2 border-gray-200 rounded-lg cursor-pointer';
+                optionDiv.textContent = `${String.fromCharCode(65 + index)}. ${option}`;
+                optionDiv.onclick = () => selectMCAnswer(index);
+                optionsContainer.appendChild(optionDiv);
+            });
+            
+            document.getElementById('mcSubmit').disabled = true;
+            document.getElementById('mcNext').classList.add('hidden');
+            selectedMCAnswer = null;
+        }
+
+        function selectMCAnswer(index) {
+            selectedMCAnswer = index;
+            document.querySelectorAll('.quiz-option').forEach((option, i) => {
+                option.classList.remove('selected');
+                if (i === index) {
+                    option.classList.add('selected');
+                }
+            });
+            document.getElementById('mcSubmit').disabled = false;
+        }
+
+        function submitMCAnswer() {
+            const question = mcQuestions[currentMCQuestion];
+            const options = document.querySelectorAll('.quiz-option');
+            
+            options.forEach((option, index) => {
+                if (index === question.correct) {
+                    option.classList.add('correct');
+                } else if (index === selectedMCAnswer && index !== question.correct) {
+                    option.classList.add('incorrect');
+                }
+            });
+            
+            if (selectedMCAnswer === question.correct) {
+                mcScore += 20;
+                document.getElementById('mcScore').textContent = mcScore;
+            }
+            
+            document.getElementById('mcSubmit').classList.add('hidden');
+            
+            if (currentMCQuestion < mcQuestions.length - 1) {
+                document.getElementById('mcNext').classList.remove('hidden');
+            } else {
+                setTimeout(() => {
+                    showMCResult();
+                }, 2000);
+            }
+        }
+
+        function nextMCQuestion() {
+            currentMCQuestion++;
+            loadMCQuestion();
+        }
+
+        function showMCResult() {
+            document.getElementById('mcQuestion').classList.add('hidden');
+            document.getElementById('mcResult').classList.remove('hidden');
+            document.getElementById('mcFinalScore').textContent = `${mcScore}/100`;
+        }
+
+        function restartMC() {
+            initMC();
+        }
+
+        // True False Functions
+        function initTF() {
+            currentTFQuestion = 0;
+            tfScore = 0;
+            selectedTFAnswer = null;
+            document.getElementById('tfResult').classList.add('hidden');
+            document.getElementById('tfQuestion').classList.remove('hidden');
+            loadTFQuestion();
+        }
+
+        function loadTFQuestion() {
+            const question = tfQuestions[currentTFQuestion];
+            document.getElementById('tfCurrentQ').textContent = currentTFQuestion + 1;
+            document.getElementById('tfTotalQ').textContent = tfQuestions.length;
+            document.getElementById('tfScore').textContent = tfScore;
+            
+            document.querySelector('#tfQuestion h3').textContent = question.question;
+            
+            document.querySelectorAll('.tf-option').forEach(option => {
+                option.classList.remove('selected', 'correct', 'incorrect');
+            });
+            
+            document.getElementById('tfSubmit').disabled = true;
+            document.getElementById('tfNext').classList.add('hidden');
+            selectedTFAnswer = null;
+        }
+
+        function selectTFAnswer(answer) {
+            selectedTFAnswer = answer;
+            document.querySelectorAll('.tf-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            if (answer) {
+                document.querySelectorAll('.tf-option')[0].classList.add('selected');
+            } else {
+                document.querySelectorAll('.tf-option')[1].classList.add('selected');
+            }
+            
+            document.getElementById('tfSubmit').disabled = false;
+        }
+
+        function submitTFAnswer() {
+            const question = tfQuestions[currentTFQuestion];
+            const options = document.querySelectorAll('.tf-option');
+            
+            if (question.correct) {
+                options[0].classList.add('correct');
+                if (!selectedTFAnswer) options[1].classList.add('incorrect');
+            } else {
+                options[1].classList.add('correct');
+                if (selectedTFAnswer) options[0].classList.add('incorrect');
+            }
+            
+            if (selectedTFAnswer === question.correct) {
+                tfScore += 20;
+                document.getElementById('tfScore').textContent = tfScore;
+            }
+            
+            document.getElementById('tfSubmit').classList.add('hidden');
+            
+            if (currentTFQuestion < tfQuestions.length - 1) {
+                document.getElementById('tfNext').classList.remove('hidden');
+            } else {
+                setTimeout(() => {
+                    showTFResult();
+                }, 2000);
+            }
+        }
+
+        function nextTFQuestion() {
+            currentTFQuestion++;
+            loadTFQuestion();
+        }
+
+        function showTFResult() {
+            document.getElementById('tfQuestion').classList.add('hidden');
+            document.getElementById('tfResult').classList.remove('hidden');
+            document.getElementById('tfFinalScore').textContent = `${tfScore}/100`;
+        }
+
+        function restartTF() {
+            initTF();
+        }
+
+        // Guess Word Functions
+        function initGW() {
+            currentGWQuestion = 0;
+            gwScore = 0;
+            document.getElementById('gwResult').classList.add('hidden');
+            document.getElementById('gwQuestion').classList.remove('hidden');
+            loadGWQuestion();
+        }
+
+        function loadGWQuestion() {
+            const question = gwQuestions[currentGWQuestion];
+            document.getElementById('gwCurrentQ').textContent = currentGWQuestion + 1;
+            document.getElementById('gwTotalQ').textContent = gwQuestions.length;
+            document.getElementById('gwScore').textContent = gwScore;
+            
+            document.getElementById('gwClue').textContent = question.clue;
+            
+            // Create word display with blanks
+            const wordDisplay = question.answer.split('').map(() => '_').join(' ');
+            document.getElementById('gwWordDisplay').textContent = wordDisplay;
+            
+            document.getElementById('gwInput').value = '';
+            document.getElementById('gwInput').focus();
+            
+            document.getElementById('gwNext').classList.add('hidden');
+        }
+
+        function submitGWAnswer() {
+            const question = gwQuestions[currentGWQuestion];
+            const userAnswer = document.getElementById('gwInput').value.toUpperCase().trim();
+            
+            if (userAnswer === question.answer) {
+                gwScore += 20;
+                document.getElementById('gwScore').textContent = gwScore;
+                document.getElementById('gwWordDisplay').textContent = question.answer;
+                document.getElementById('gwWordDisplay').classList.add('text-green-600');
+                document.getElementById('gwInput').classList.add('border-green-500', 'text-green-600');
+            } else {
+                document.getElementById('gwWordDisplay').textContent = `${question.answer} (Jawaban: ${userAnswer})`;
+                document.getElementById('gwWordDisplay').classList.add('text-red-600');
+                document.getElementById('gwInput').classList.add('border-red-500', 'text-red-600');
+            }
+            
+            document.getElementById('gwInput').disabled = true;
+            document.getElementById('gwSubmit').classList.add('hidden');
+            
+            if (currentGWQuestion < gwQuestions.length - 1) {
+                document.getElementById('gwNext').classList.remove('hidden');
+            } else {
+                setTimeout(() => {
+                    showGWResult();
+                }, 2000);
+            }
+        }
+
+        function nextGWQuestion() {
+            currentGWQuestion++;
+            document.getElementById('gwWordDisplay').classList.remove('text-green-600', 'text-red-600');
+            document.getElementById('gwInput').classList.remove('border-green-500', 'text-green-600', 'border-red-500', 'text-red-600');
+            document.getElementById('gwInput').disabled = false;
+            document.getElementById('gwSubmit').classList.remove('hidden');
+            loadGWQuestion();
+        }
+
+        function showGWResult() {
+            document.getElementById('gwQuestion').classList.add('hidden');
+            document.getElementById('gwResult').classList.remove('hidden');
+            document.getElementById('gwFinalScore').textContent = `${gwScore}/100`;
+        }
+
+        function restartGW() {
+            initGW();
+        }
+
+        // Name Draw Functions
+        function drawName() {
+            const button = document.getElementById('drawButton');
+            button.disabled = true;
+            button.innerHTML = '🎲 Mengundi...';
+            button.classList.add('spinning');
+            
+            // Simulate drawing process
+            setTimeout(() => {
+                const randomIndex = Math.floor(Math.random() * students.length);
+                const selectedStudent = students[randomIndex];
+                const [id, name] = selectedStudent.split(' | ');
+                
+                document.getElementById('selectedId').textContent = id;
+                document.getElementById('selectedName').textContent = name;
+                document.getElementById('drawResult').classList.remove('hidden');
+                
+                button.innerHTML = '🎲 Undi Nama';
+                button.classList.remove('spinning');
+                button.disabled = false;
+                button.classList.add('hidden');
+                document.getElementById('drawAgain').classList.remove('hidden');
+            }, 2000);
+        }
+
+        function resetDraw() {
+            document.getElementById('drawResult').classList.add('hidden');
+            document.getElementById('drawButton').classList.remove('hidden');
+            document.getElementById('drawAgain').classList.add('hidden');
+        }
+
+        // Event listeners
+        document.getElementById('gwInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                submitGWAnswer();
+            }
+        });
+
+        // Initialize
+        document.getElementById('totalStudents').textContent = students.length;
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9809d92ca6aedf9f',t:'MTc1ODEyNTE2MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
